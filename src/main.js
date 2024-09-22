@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { createSpheresOnSurface } from './modules/spheresGrid.js';
+import { createSpheresOnSurface } from './modules/spheres-grid.js';
 import { addLights } from './modules/lights.js';
 import { surface } from './modules/surface.js';
-import { createScene, createCamera, createRenderer } from './modules/sceneSetup.js';
+import { createScene, createCamera, createRenderer } from './modules/scene-setup.js';
 import { SphereLogic, SphereVisualization, ScanningController } from './modules/scanning.js';
+import { StageManager } from './modules/stage-manager.js';
 
 // Initialize Scene, Camera, Renderer
 const scene = createScene();
@@ -46,6 +47,7 @@ const { spheres, spheresData, errorSpheres, errorData } = createSpheresOnSurface
 
 const flowController = new FlowController();
 
+
 const sphereLogic = new SphereLogic(ROWS, COLS);
 sphereLogic.spheresData = spheresData;
 
@@ -53,17 +55,27 @@ const sphereVisualization = new SphereVisualization(scene, spheres, errorSpheres
 
 const scanningController = new ScanningController(sphereLogic, sphereVisualization, flowController);
 
+const stageManager = new StageManager(
+  { scene, camera, renderer },
+  sphereLogic,
+  sphereVisualization,
+  flowController,
+  scanningController,
+  surface,
+  spheres
+);
+
 scene.add(spheres, errorSpheres);
 
 let lastTime = 0;
+
 
 function animate(currentTime) {
   requestAnimationFrame(animate);
   const deltaTime = (currentTime - lastTime) / 1000;
   lastTime = currentTime;
 
-  updateSpheres(deltaTime);
-//   sphereVisualization.updateErrorSpherePositions();
+  stageManager.stages[stageManager.currentStage].update(deltaTime);
 
   renderer.render(scene, camera);
 }
@@ -126,6 +138,6 @@ function updateSpheres(deltaTime) {
     sphereVisualization.updateSphereColor(sphere, index);
   });
   
-  spheres.instanceColor.needsUpdate = true;
+  // spheres.instanceColor.needsUpdate = true;
 
 //   sphereVisualization.initializeErrorSpheres();
