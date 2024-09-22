@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+}
+
+#animation-container {
+    width: 800px;
+    height: 800px;
+    background-color: #f0f0f0;
+    margin-left: 20px; /* Left alignment with some margin */
+    margin-top: 150vh; /* Start off further down to require scrolling */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow effect */
+}
