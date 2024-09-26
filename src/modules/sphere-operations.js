@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-export function resetSphere(sphere, index, spheresData, surface) {
+import { surface } from '../modules/surface.js';
+export function resetSphere(sphere, index, spheresData) {
     sphere.status = Math.random() < 0.75 ? 'good' : 'bad';
     sphere.scanned = false;
     sphere.visible = true;
@@ -12,7 +13,7 @@ export function resetSphere(sphere, index, spheresData, surface) {
     return sphere;
 }
 
-export function updateSpherePosition(sphere, flowSpeed, surface) {
+export function updateSpherePosition(sphere, flowSpeed) {
     sphere.v = (sphere.v - flowSpeed + 1) % 1;
     surface.getPoint(sphere.u, sphere.v, sphere.position);
     return sphere;
