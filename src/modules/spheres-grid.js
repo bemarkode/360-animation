@@ -41,6 +41,8 @@ export function createSpheresOnSurface(cols, rows) {
             index: i,
             col: col,
             row: row,
+            cols: cols,
+            rows: rows,
             u: u,
             v: v,
             status: status,

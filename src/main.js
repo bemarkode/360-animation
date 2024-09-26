@@ -33,7 +33,7 @@ const scanningController = new ScanningController(sphereLogic, sphereVisualizati
 
 const stageManager = new StageManager(
   { scene, camera, renderer },
-  sphereLogic,
+  spheresData,
   sphereVisualization,
   flowController,
   scanningController,
