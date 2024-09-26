@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 export function resetSphere(sphere, index, spheresData, surface) {
     sphere.status = Math.random() < 0.75 ? 'good' : 'bad';
     sphere.scanned = false;
@@ -38,4 +39,32 @@ export function updateSphereVisibility(sphere, visibilityRange) {
         sphere.row !== 0
     );
     return sphere.visible;
+}
+
+export function getSphereColor(sphere) {
+    const color = new THREE.Color();
+    if (sphere.status === 'good' && !sphere.scanned) color.setHex(0xffffff);
+    else if (sphere.status === 'bad' && !sphere.scanned) color.setHex(0xffbbbb);
+    else if (sphere.status === 'good' && sphere.scanned) color.setHex(0x00ff00);
+    else color.setHex(0xff0000);
+    return color;
+}
+
+export function updateSphereColor(sphere, instancedMesh, index) {
+    const color = getSphereColor(sphere);
+    instancedMesh.setColorAt(index, color);
+    instancedMesh.instanceColor.needsUpdate = true;
+}
+
+export function updateSphereMatrix(sphere, instancedMesh, index) {
+    const matrix = new THREE.Matrix4();
+    const scale = sphere.visible ? new THREE.Vector3(1, 1, 1) : new THREE.Vector3(0, 0, 0);
+    matrix.compose(sphere.position, sphere.rotation, scale);
+    instancedMesh.setMatrixAt(index, matrix);
+    instancedMesh.instanceMatrix.needsUpdate = true;
+}
+
+export function updateSphereAfterReset(sphere, instancedMesh, index) {
+    updateSphereColor(sphere, instancedMesh, index);
+    updateSphereMatrix(sphere, instancedMesh, index);
 }

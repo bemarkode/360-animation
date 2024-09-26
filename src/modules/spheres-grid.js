@@ -35,7 +35,7 @@ export function createSpheresOnSurface(cols, rows) {
         spheres.setMatrixAt(i, matrix);
         errorSpheres.setMatrixAt(i, matrix);
 
-        const status = Math.random() < 0.75 ? 'good' : 'bad';
+        const status = Math.random() < 0.25 ? 'good' : 'bad';
         
         spheresData.push({
             index: i,

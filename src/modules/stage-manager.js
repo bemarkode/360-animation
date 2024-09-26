@@ -137,7 +137,7 @@ export class StageManager {
             }
     
             SphereOps.updateSphereVisibility(sphere, this.currentVisibilityRange);
-            this.sphereVisualization.updateSphereMatrix(sphere, index);
+            SphereOps.updateSphereMatrix(sphere, this.spheres, index);
         });
     
         this.spheres.instanceMatrix.needsUpdate = true;

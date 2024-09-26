@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as SphereOps from './sphere-operations.js';
 
 export class SphereLogic {
     constructor(rows, cols) {
@@ -92,16 +93,6 @@ export class SphereLogic {
         }
     }
 
-    resetSphere(sphereIndex) {
-        const sphere = this.spheresData[sphereIndex];
-        
-        sphere.status = Math.random() < 0.75 ? 'good' : 'bad';
-        sphere.scanned = false;
-        sphere.visible = true;
-
-        return sphere;
-    }
-
 }
 
 export class SphereVisualization {
@@ -122,10 +113,7 @@ export class SphereVisualization {
                 duration: 0.5,
                 ease: "power2.inOut",
                 onUpdate: () => {
-                    const matrix = new THREE.Matrix4();
-                    matrix.compose(sphere.position, new THREE.Quaternion(), new THREE.Vector3(1, 1, 1));
-                    this.spheres.setMatrixAt(sphereIndex, matrix);
-                    this.spheres.instanceMatrix.needsUpdate = true;
+                    this.updateSphereMatrix(sphere, sphereIndex);
                 },
                 onComplete: () => {
                     resolve();
@@ -133,6 +121,7 @@ export class SphereVisualization {
             });
         });
     }
+
 
     async animateSphereDown(sphereIndex) {
         const sphere = this.sphereLogic.spheresData[sphereIndex];
@@ -144,10 +133,7 @@ export class SphereVisualization {
                 duration: 0.5,
                 ease: "power2.inOut",
                 onUpdate: () => {
-                    const matrix = new THREE.Matrix4();
-                    matrix.compose(sphere.position, new THREE.Quaternion(), new THREE.Vector3(1, 1, 1));
-                    this.spheres.setMatrixAt(sphereIndex, matrix);
-                    this.spheres.instanceMatrix.needsUpdate = true;
+                    this.updateSphereMatrix(sphere, sphereIndex);
                 },
                 onComplete: () => {
                     sphere.isAnimating = false;
@@ -156,7 +142,6 @@ export class SphereVisualization {
             });
         });
     }
-
     async animateAllSpheresDown(sphereIndices) {
         const animations = sphereIndices.map(index => this.animateSphereDown(index));
         await Promise.all(animations);
@@ -200,22 +185,15 @@ export class SphereVisualization {
     }
 
     updateSphereColor(sphere, index) {
-        const color = new THREE.Color();
-        if (sphere.status === 'good' && sphere.scanned === false) color.setHex(0xffffff);
-        else if (sphere.status === 'bad' && sphere.scanned === false) color.setHex(0xffbbbb);
-        else if (sphere.status === 'good' && sphere.scanned) color.setHex(0x00ff00);
-        else color.setHex(0xff0000);
-        this.spheres.setColorAt(index, color);
-        this.spheres.instanceColor.needsUpdate = true;
+        SphereOps.updateSphereColor(sphere, this.spheres, index);
     }
+
 
 
     updateSphereMatrix(sphere, index) {
-        const matrix = new THREE.Matrix4();
-        const scale = sphere.visible ? new THREE.Vector3(1, 1, 1) : new THREE.Vector3(0, 0, 0);
-        matrix.compose(sphere.position, new THREE.Quaternion(), scale);
-        this.spheres.setMatrixAt(index, matrix);
+        SphereOps.updateSphereMatrix(sphere, this.spheres, index);
     }
+
     async animateSpheresUp(sphereIndices) {
         const animations = sphereIndices.map(index => this.animateSphereUp(index));
         await Promise.all(animations);
@@ -231,9 +209,6 @@ export class SphereVisualization {
     updateSphereAfterReset(sphere, index) {
         this.updateSphereColor(sphere, index);
         this.updateSphereMatrix(sphere, index);
-        
-        this.spheres.instanceColor.needsUpdate = true;
-        this.spheres.instanceMatrix.needsUpdate = true;
     }
 }
 
