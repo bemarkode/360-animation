@@ -1,5 +1,6 @@
 // stageManager.js
 import * as THREE from 'three';
+import { updateSphereVisibility } from './visibility-functions.js';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,6 +31,10 @@ export class StageManager {
             },
             // Add more stages as needed
         ];
+
+        this.currentVisibilityRange = this.stages[0].visibilityRange;
+
+        
         this.setupScrollTrigger();
     }
 
@@ -119,7 +124,8 @@ export class StageManager {
     }
 
     updateStage1(deltaTime) {
-        const flowSpeed = this.flowController.flowSpeedObject.value;
+        const flowSpeed = this.flowController.getFlowSpeed();
+
       
         this.sphereLogic.spheresData.forEach((sphere, index) => {
             // Update flow position if not animating
@@ -135,13 +141,7 @@ export class StageManager {
             }
       
             // Update visibility
-            sphere.visible = (
-                sphere.u >= this.stages[0].visibilityRange.u.min && 
-                sphere.u <= this.stages[0].visibilityRange.u.max && 
-                sphere.v >= this.stages[0].visibilityRange.v.min && 
-                sphere.v <= this.stages[0].visibilityRange.v.max && 
-                sphere.row !== 0
-            );
+            updateSphereVisibility(sphere, this.currentVisibilityRange);
       
             this.sphereVisualization.updateSphereMatrix(sphere, index);
         });
@@ -152,7 +152,7 @@ export class StageManager {
     }
 
     scan() {
-        const flowSpeed = this.flowController.flowSpeedObject.value;
+        const flowSpeed = this.flowController.getFlowSpeed();
         let sphereCounter = 0;
 
         for (let i = 0; i < this.sphereLogic.spheresData.length; i++) {
