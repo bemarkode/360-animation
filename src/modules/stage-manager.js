@@ -1,5 +1,6 @@
 import { Stage1 } from '../stages/stage-1/stage-1.js';
 import { Stage2 } from '../stages/stage-2/stage-2.js';
+import { Stage3 } from '../stages/stage-3/stage-3.js';
 import { StageObserver } from './stage-observer.js';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -10,8 +11,8 @@ export class StageManager {
         this.stages = [
             new Stage1(),
             new Stage2(),
+            new Stage3()
         ];
-        this.isTransitioning = false;
         this.stageObserver = new StageObserver();
         this.stageObserver.updateStage(this.currentStageIndex);
         this.setupScrollTrigger();
@@ -25,7 +26,7 @@ export class StageManager {
             scrollTrigger: {
                 trigger: "#animation-container",
                 start: "bottom bottom",
-                end: `+=${2 * 100}%`,
+                end: `+=${3 * 100}%`,
                 pin: true,
                 fastScrollEnd: true,
                 preventOverlaps: true,
@@ -88,8 +89,8 @@ export class StageManager {
 
     updateObserver() {
         const currentStage = this.stages[this.currentStageIndex];
-        this.stageObserver.updateStage(this.currentStageIndex, currentStage.isTransitioning);
-        console.log(`Observer updated. Current stage: ${this.currentStageIndex}, Transitioning: ${currentStage.isTransitioning}`);
+        this.stageObserver.updateStage(this.currentStageIndex);
+        console.log(`Observer updated. Current stage: ${this.currentStageIndex}`);
     }
 
     update(deltaTime) {

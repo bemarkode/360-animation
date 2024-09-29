@@ -3,7 +3,6 @@ import { store } from './store.js';
 export class StageObserver {
     constructor() {
         this.currentStage = 0;
-        this.isTransitioning = false;
         this.element = this.createObserverElement();
         this.updateDisplay(); // Call this immediately after creation
     }
@@ -25,27 +24,21 @@ export class StageObserver {
         return element;
     }
 
-    updateStage(stageIndex, isTransitioning) {
-        this.currentStage = stageIndex;
-        this.isTransitioning = isTransitioning;
+    updateStage(currentStageIndex) {
+        this.currentStage = currentStageIndex;
         this.updateDisplay();
     }
 
     startTransition() {
-        this.isTransitioning = true;
         this.updateDisplay();
     }
 
     endTransition() {
-        this.isTransitioning = false;
         this.updateDisplay();
     }
 
     updateDisplay() {
         let text = `Current Stage: ${this.currentStage + 1}`;
-        if (this.isTransitioning) {
-            text += ' (Transitioning)';
-        }
         this.element.textContent = text;
         console.log('StageObserver updated:', text); // Add this for debugging
     }

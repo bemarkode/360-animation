@@ -15,17 +15,14 @@ export class Stage2 {
 
     async transitionTo() {
         console.log('Transitioning to Stage 2');
-        this.isTransitioning = true;
         await visibilityManager.transitionToStage('stage2');
         this.logic.initializeStage();
-        this.isTransitioning = false;
         this.update()
     }
 
     async transitionFrom() {
         console.log('Transitioning from Stage 2');
         
-        this.isTransitioning = true;
     }
 
 
