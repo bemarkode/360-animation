@@ -1,30 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360 Multi-Staged Animation</title>
-    <link rel="stylesheet" href="src/styles.css">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
-        }
-      }
-    </script>
-
-    <!-- Include GSAP and ScrollTrigger as standard script files -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+	<!-- Meta and title tags -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>360 Multi-Staged Animation</title>
+	<!-- Stylesheet link -->
+	<link rel="stylesheet" href="src/styles.css">
+	<!-- Favicon links -->
+	<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+	<!-- Importmap for Three.js modules -->
+	<script type="importmap">
+	{
+		"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
+		"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
+		}
+	}
+	</script>
+	<!-- GSAP and ScrollTrigger scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 </head>
 <body>
-    <h1>360 Multi-Staged Animation</h1>
-    <div id="animation-container"></div>
-    
-    <!-- Import your main JavaScript module -->
-    <script type="module" src="src/main.js"></script>
+	<h1>360 Multi-Staged Animation</h1>
+	<div id="fps-counter"></div>
+	<div id="space-control">space to simulate homepage container</div>
+	<!-- Content container that wraps the animation and text -->
+	<div class="centering-div">
+		<div class="content-container">
+			<!-- Animation container -->
+			<div id="animation-container"></div>
+			
+			<!-- Text container with paragraphs -->
+
+			<div class="text-container">
+				<!-- Stage 1 -->
+				<div class="stage-paragraph" data-stage="0">
+					<h2>Limited Review</h2>
+					<p>
+						In most organizations, only a small subset of quality records is reviewed, leaving potential issues undetected.
+					</p>
+				</div>
+				<!-- Stage 2 -->
+				<div class="stage-paragraph" data-stage="1">
+					<h2>Hidden Issues</h2>
+					<p>
+						A limited inspection may reveal some issues, but this reactive approach is inefficient, expensive, and time-consuming.
+					</p>
+				</div>
+				<!-- Stage 3 -->
+				<div class="stage-paragraph" data-stage="2">
+					<h2>Comprehensive Analysis</h2>
+					<p>
+						Without full inspection, hidden insights and interrelated issues can go unnoticed, leading to serious quality and compliance risks.
+					</p>
+				</div>
+				<div class="stage-paragraph" data-stage="3">
+					<h2>Leveraging History</h2>
+					<p>
+						By incorporating historical records, 360 LOOK enables deep traceability for trend analysis and root cause identification..
+					</p>
+				</div>
+				<div class="stage-paragraph" data-stage="4">
+					<h2>On-demand or Continuous Monitoring</h2>
+					<p>
+						360 LOOK analyzes 100% of records, uncovering hidden issues and identifying interconnected problems that would otherwise go undetected.
+					</p>
+				</div>
+				<div class="stage-paragraph" data-stage="5">
+					<h2>Corrective Action</h2>
+					<p>
+						This allows corrective actions that safeguard the brand from reputational damage.
+					</p>
+				</div>
+				<div class="stage-paragraph" data-stage="6">
+					<h2>Prediction &  Prevention</h2>
+					<p>
+						360 LOOK shifts your quality management from reactive to proactive, empowering you to predict and prevent future issues, ensuring continuous improvement.
+					</p>
+				</div>
+				<div class="stage-paragraph" data-stage="7">
+					<h2>Total Enterprise Governance	</h2>
+					<p>
+						360 LOOK extends beyond individual projects, delivering organization-wide detection and transforming your record management approach. 
+					</p>
+				</div>
+
+				<!-- Add more stages as needed -->
+			</div>
+
+		</div>
+	</div>
+	
+	<!-- Import your main JavaScript module -->
+	<script type="module" src="src/main.js"></script>
 </body>
 </html>

@@ -6,11 +6,14 @@ import { createScene, createCamera, createRenderer } from './modules/scene-setup
 import { StageManager } from './modules/stage-manager.js';
 import { createFlowController } from './modules/flow-controller.js';
 import { store } from './modules/store.js';
+import { FPSCounter } from './utils/FPSCounter.js';
 
 // Initialize Scene, Camera, Renderer
 const scene = createScene();
 const camera = createCamera();
 const renderer = createRenderer();
+const fpsCounter = new FPSCounter()
+fpsCounter.addToContainer(document.getElementById('animation-container'));
 document.getElementById('animation-container').appendChild(renderer.domElement);
 
 // Add lights to the scene
@@ -27,7 +30,7 @@ store.setScene(scene);
 
 const flowController = createFlowController();
 
-const stageManager = new StageManager(spheresData, flowController);
+const stageManager = new StageManager();
 
 scene.add(spheres);
 
@@ -39,6 +42,8 @@ function animate(currentTime) {
     lastTime = currentTime;
 
     stageManager.update(deltaTime);
+
+    fpsCounter.update();
 
     renderer.render(scene, camera);
 }

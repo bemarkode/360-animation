@@ -2,7 +2,7 @@ import { store } from '../../modules/store.js';
 import * as SphereOps from '../../modules/sphere-operations.js';
 import { visibilityManager } from '../../modules/visibility-manager.js';
 
-export class Stage1Control {
+export class Stage2Control {
     constructor(logic, visualization) {
         this.logic = logic;
         this.visualization = visualization;

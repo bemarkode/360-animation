@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as SphereOps from '../../modules/sphere-operations.js';
 import { store } from '../../modules/store.js';
 
-export class Stage1Visualization {
+export class Stage2Visualization {
     constructor() {
         this.spheresData = store.getSpheresData();
         this.spheres = store.getSpheres();

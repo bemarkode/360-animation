@@ -3,7 +3,8 @@ import * as THREE from 'three';
 export const createScene = () => new THREE.Scene();
 
 export const createCamera = () => {
-  const camera = new THREE.PerspectiveCamera(25, 800 / 800, 0.1, 20000);
+  const camera = new THREE.PerspectiveCamera(25, 600 / 600, 0.1, 20000);
+  // camera.projectionMatrix.makePerspective(45, 600 / 600, 0.1, 20000);
   const center = new THREE.Vector3(0, 0, 0);
   camera.position.set(center.x, center.y - 4000, center.z + 750);
   camera.lookAt(center);
@@ -18,7 +19,7 @@ export const createRenderer = () => {
     stencil: false,
     depth: true,
   });
-  renderer.setSize(800, 800);
+  renderer.setSize(600, 600);
   renderer.localClippingEnabled = true;
   return renderer;
 };

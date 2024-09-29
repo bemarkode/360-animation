@@ -7,7 +7,9 @@ class Store {
             spheres: null,
             spheresData: null,
             flowSpeed: 3 / 4900, // Default flow speed,
-            scene: null
+            scene: null,
+            visibilityRange: { u: { min: 0, max: 1 }, v: { min: 0, max: 1 } },
+            targetVisibilityRange: { u: { min: 0, max: 1 }, v: { min: 0, max: 1 } }
         };
     }
 
@@ -41,6 +43,25 @@ class Store {
 
     getScene() {
         return this.state.scene;
+    }
+    setVisibilityRange(range) {
+        this.state.visibilityRange = range;
+    }
+
+    getVisibilityRange() {
+        return this.state.visibilityRange;
+    }
+
+    setTargetVisibilityRange(range) {
+        this.state.targetVisibilityRange = range;
+    }
+
+    getTargetVisibilityRange() {
+        return this.state.targetVisibilityRange;
+    }
+
+    updateVisibilityRange(interpolatedRange) {
+        this.state.visibilityRange = interpolatedRange;
     }
 }
 

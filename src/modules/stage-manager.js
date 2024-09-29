@@ -1,38 +1,79 @@
 import { Stage1 } from '../stages/stage-1/stage-1.js';
-// import { Stage2 } from './stages/stage2/Stage2.js'; // Uncomment when Stage2 is ready
+import { Stage2 } from '../stages/stage-2/stage-2.js';
+import { StageObserver } from './stage-observer.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export class StageManager {
-    constructor(spheresData, flowController) {
+    constructor() {
         this.currentStageIndex = 0;
         this.stages = [
-            new Stage1(spheresData, flowController),
-            // new Stage2(spheresData, flowController), // Uncomment when Stage2 is ready
+            new Stage1(),
+            new Stage2(),
         ];
+        this.isTransitioning = false;
+        this.stageObserver = new StageObserver();
+        this.stageObserver.updateStage(this.currentStageIndex);
         this.setupScrollTrigger();
+        console.log('StageManager initialized');
     }
 
     setupScrollTrigger() {
-        ScrollTrigger.create({
-            trigger: "#animation-container",
-            start: "top top",
-            end: "bottom bottom",
-            onUpdate: (self) => {
-                if (self.progress > 0.3 && this.currentStageIndex === 0) {
-                    this.transitionToNextStage();
-                } else if (self.progress < 0.2 && this.currentStageIndex === 1) {
-                    this.transitionToPreviousStage();
+        let currentStageIndex = this.currentStageIndex;
+        const numStages = this.stages.length;
+        const mastertimeline = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#animation-container",
+                start: "bottom bottom",
+                end: `+=${2 * 100}%`,
+                pin: true,
+                fastScrollEnd: true,
+                preventOverlaps: true,
+                markers: true,
+                onRefresh: self => {
+                    // This will run on page load and every time the screen size changes
+                    ScrollTrigger.clearScrollMemory();
+                    window.history.scrollRestoration = "manual";
+                },
+                onUpdate: self => {
+                    const scrollProgress = (self.progress - 1/numStages) / (1 - 1/numStages);
+                    let targetStage = 1 + Math.floor(scrollProgress * (numStages - 1));
+                    console.log("Current:", currentStageIndex, "Target:", targetStage, "Total:", numStages, "Direction:", self.direction);
+                    
+                    if (targetStage !== currentStageIndex && targetStage >= -1 && targetStage < numStages) {
+                        console.log("Condition met, calling transition");
+                        
+                        // Determine if we're scrolling up or down
+                        const isScrollingUp = self.direction === -1;
+                        
+                        // Update currentStageIndex immediately
+                        currentStageIndex = targetStage;
+                        
+                        // Use GSAP's delayedCall for immediate execution
+                        gsap.delayedCall(0, async () => {
+                            console.log(isScrollingUp ? "Scrolling Up" : "Scrolling Down");
+                            if (isScrollingUp) {
+                                console.log("Transitioning to previous stage");
+                                await this.transitionToPreviousStage();
+                            } else {
+                                console.log("Transitioning to next stage");
+                                await this.transitionToNextStage();
+                            }
+                            this.updateObserver();
+                        });
+                    }
                 }
-            }
+            }  
         });
     }
+
 
     async transitionToNextStage() {
         if (this.currentStageIndex < this.stages.length - 1) {
             await this.stages[this.currentStageIndex].transitionFrom();
             this.currentStageIndex++;
             await this.stages[this.currentStageIndex].transitionTo();
+            this.updateObserver();
         }
     }
 
@@ -41,7 +82,14 @@ export class StageManager {
             await this.stages[this.currentStageIndex].transitionFrom();
             this.currentStageIndex--;
             await this.stages[this.currentStageIndex].transitionTo();
+            this.updateObserver();
         }
+    }
+
+    updateObserver() {
+        const currentStage = this.stages[this.currentStageIndex];
+        this.stageObserver.updateStage(this.currentStageIndex, currentStage.isTransitioning);
+        console.log(`Observer updated. Current stage: ${this.currentStageIndex}, Transitioning: ${currentStage.isTransitioning}`);
     }
 
     update(deltaTime) {
