@@ -5,11 +5,14 @@ export function resetSphere(sphere, index, spheresData) {
     sphere.status = Math.random() < 0.75 ? 'good' : 'bad';
     sphere.scanned = false;
     sphere.visible = true;
+    sphere.highlightedIssue = false;
     
     surface.getPoint(sphere.u, 0, sphere.position);
 
     sphere.row = Math.floor(index / spheresData.cols);
     sphere.col = index % spheresData.cols;
+
+    sphere.scale.set(1, 1, 1);
 
     return sphere;
 }
@@ -34,10 +37,17 @@ export function shouldScanSphere(sphere, index, flowSpeed, sphereCounter) {
 
 export function getSphereColor(sphere) {
     const color = new THREE.Color();
-    if (sphere.status === 'good' && !sphere.scanned) color.setHex(0xffffff);
-    else if (sphere.status === 'bad' && !sphere.scanned) color.setHex(0xffbbbb);
-    else if (sphere.status === 'good' && sphere.scanned) color.setHex(0x00ff00);
-    else color.setHex(0xff0000);
+    if (sphere.highlightedIssue) {
+        color.setHex(0xff0000); // Red for highlighted issues
+    } else if (sphere.status === 'good' && !sphere.scanned) {
+        color.setHex(0xffffff);
+    } else if (sphere.status === 'bad' && !sphere.scanned) {
+        color.setHex(0xffbbbb);
+    } else if (sphere.status === 'good' && sphere.scanned) {
+        color.setHex(0x00ff00);
+    } else {
+        color.setHex(0xff0000);
+    }
     return color;
 }
 

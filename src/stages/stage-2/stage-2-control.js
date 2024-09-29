@@ -53,25 +53,28 @@ export class Stage2Control {
         }
     }
 
-async startScanning(sphereIndex) {
-    // console.log(`Starting scanning process for sphere ${sphereIndex}`);
-    store.setFlowSpeed(0); // Stop the flow
+    async startScanning(sphereIndex) {
+        console.log(`Starting scanning process for sphere ${sphereIndex}`);
+        store.setFlowSpeed(0); // Stop the flow
 
-    const { result, badSpheres, scannedSpheres } = this.logic.propagate(sphereIndex);
+        const { result, badSpheres, scannedSpheres } = this.logic.propagate(sphereIndex);
 
-    await this.handleScanningVisualization(scannedSpheres);
+        await this.handleScanningVisualization(scannedSpheres);
 
-    if (result === 'repaired') {
-        await this.repairSpheres(badSpheres);
+        if (result === 'repaired') {
+            await this.repairSpheres(badSpheres);
+        }
+
+        // New step: Highlight undetected issues
+        await this.highlightUndetectedIssues(scannedSpheres);
+
+        await this.visualization.animateAllSpheresDown(scannedSpheres);
+        
+        // Wait a short time before restarting the flow
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        store.setFlowSpeed(3 / 4900); // Restart the flow
     }
-
-    await this.visualization.animateAllSpheresDown(scannedSpheres);
-    
-    // Wait a short time before restarting the flow
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    store.setFlowSpeed(3 / 4900); // Restart the flow
-}
     
     async handleScanningVisualization(scannedSpheres) {
         for (const index of scannedSpheres) {
@@ -97,5 +100,25 @@ async startScanning(sphereIndex) {
 
         // Add a small delay to make the color change visible. Later animate
         await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    async highlightUndetectedIssues(scannedSpheres) {
+        const leftmostScannedIndex = Math.min(...scannedSpheres);
+        const undetectedBadSpheres = [];
+
+        // Find all bad spheres to the right of the scanned area
+        for (let i = leftmostScannedIndex - 1; i >= Math.max(leftmostScannedIndex - 2000, 0); i--) {
+            const sphere = this.spheresData[i];
+            if (sphere.status === 'bad' && sphere.visible) {
+                undetectedBadSpheres.push(i);
+            }
+        }
+
+        // Highlight the undetected bad spheres
+        const highlightPromises = undetectedBadSpheres.map(index => 
+            this.visualization.highlightUndetectedSphere(index)
+        );
+
+        await Promise.all(highlightPromises);
     }
 }

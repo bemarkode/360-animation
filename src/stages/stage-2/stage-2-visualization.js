@@ -57,6 +57,32 @@ export class Stage2Visualization {
         await Promise.all(animations);
     }
 
+    async highlightUndetectedSphere(sphereIndex) {
+        const sphere = this.spheresData[sphereIndex];
+        return new Promise((resolve) => {
+            sphere.isAnimating = true;
+            sphere.highlightedIssue = true;
+            const startScale = sphere.scale.x;
+            gsap.to(sphere.scale, {
+                x: startScale * 1.5,
+                y: startScale * 1.5,
+                z: startScale * 1.5,
+                duration: 0.5,
+                ease: "elastic.out(1, 0.3)",
+                onUpdate: () => {
+                    this.updateSphereMatrix(sphere, sphereIndex);
+                    this.updateSphereColor(sphere, sphereIndex);
+                },
+                onComplete: () => {
+                    sphere.isAnimating = false;
+                    resolve();
+                }
+            });
+
+
+        });
+    }
+
     async createScanningSphere(sphereIndex) {
         const sphere = this.spheresData[sphereIndex];
         return new Promise((resolve) => {
