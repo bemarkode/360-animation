@@ -3,11 +3,14 @@ import * as SphereOps from '../../modules/sphere-operations.js';
 import { visibilityManager } from '../../modules/visibility-manager.js';
 
 export class Stage2Control {
-    constructor(logic, visualization) {
+    constructor(spheres, spheresData,logic, visualization, stageObserver) {
+        this.stageObserver = stageObserver;
+        this.spheres = spheres;
+        this.spheresData = spheresData;
         this.logic = logic;
         this.visualization = visualization;
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+        this.isScanning = false;
+
     }
 
     update(deltaTime) {
@@ -23,16 +26,17 @@ export class Stage2Control {
                 SphereOps.updateSpherePosition(sphere, flowSpeed);
     
                 if (SphereOps.isSphereAtReset(sphere)) {
-                    const resetSphere = SphereOps.resetSphere(sphere, index, this.spheresData);
-                    this.visualization.updateSphereAfterReset(resetSphere, index);
+                    // const resetSphere = SphereOps.resetSphere(sphere, index, this.spheresData);
+                    // this.visualization.updateSphereAfterReset(resetSphere, index);
+                    SphereOps.resetSphere(sphere, index, this.spheresData);
                 }
             }
     
-            visibilityManager.updateSphereVisibility(sphere);
-            this.visualization.updateSphereMatrix(sphere, index);
+
+
         });
     
-        this.spheres.instanceMatrix.needsUpdate = true;
+
         this.visualization.updateVisuals();
     }
 
@@ -45,39 +49,80 @@ export class Stage2Control {
             
             if (i % this.logic.cols === 0) sphereCounter++;
     
-            if (SphereOps.shouldScanSphere(sphere, i, flowSpeed, sphereCounter)) {
-                // console.log(`Scanning sphere at index ${i}`);
+            if (SphereOps.shouldSphereBeScanned(sphere, flowSpeed, sphereCounter))  {
+                
                 this.startScanning(i);
                 break;
             }
         }
     }
 
+    async stopScanning() {
+        // Indicate that scanning has been cancelled
+        this.isScanning = false;
+        this.isScanningCancelled = true;
+    
+        // Stop the flow
+        store.setFlowSpeed(0);
+    
+        // Clear any ongoing animations in visualization
+    
+        // Reset spheresData
+        this.spheresData.forEach(sphere => {
+            sphere.scanned = false;
+            sphere.isAnimating = false;
+            sphere.scale.set(1, 1, 1);
+            sphere.highlightedIssue = false;
+            // Reset other properties if needed
+        });
+    
+        // Update sphere colors and matrices
+        this.visualization.updateVisuals();
+    
+        // Optionally, reset the flow speed
+        store.setFlowSpeed(3 / 4900); // Or set it to 0 if needed
+    }
+    
+
     async startScanning(sphereIndex) {
-        console.log(`Starting scanning process for sphere ${sphereIndex}`);
+        this.isScanning = true;
+        this.isScanningCancelled = false;
+    
+        console.log('Starting scanning', sphereIndex);
         store.setFlowSpeed(0); // Stop the flow
-
+    
         const { result, badSpheres, scannedSpheres } = this.logic.propagate(sphereIndex);
-
+    
+        if (this.isScanningCancelled) return;
+    
         await this.handleScanningVisualization(scannedSpheres);
-
+    
+        if (this.isScanningCancelled) return;
+    
         if (result === 'repaired') {
             await this.repairSpheres(badSpheres);
         }
-
-        // New step: Highlight undetected issues
+    
+        if (this.isScanningCancelled) return;
+    
         await this.highlightUndetectedIssues(scannedSpheres);
-
+    
+        if (this.isScanningCancelled) return;
+    
         await this.visualization.animateAllSpheresDown(scannedSpheres);
-        
-        // Wait a short time before restarting the flow
+    
         await new Promise(resolve => setTimeout(resolve, 200));
-        
+        this.isScanning = false;
         store.setFlowSpeed(3 / 4900); // Restart the flow
     }
     
+    
+    
+
     async handleScanningVisualization(scannedSpheres) {
         for (const index of scannedSpheres) {
+            if (this.isScanningCancelled) break;
+    
             const sphere = this.logic.spheresData[index];
             await this.visualization.animateSphereUp(index);
             await this.visualization.createScanningSphere(index);
@@ -85,24 +130,25 @@ export class Stage2Control {
             this.visualization.updateSphereColor(sphere, index);
         }
     }
+    
 
     async repairSpheres(sphereIndices) {
-        // console.log('Repairing spheres:', sphereIndices);
-        
-        // Repair the spheres in the logic
+        if (this.isScanningCancelled) return;
+    
         this.logic.repair(sphereIndices);
-
-        // Update the visualization for each repaired sphere
+    
         for (const index of sphereIndices) {
+            if (this.isScanningCancelled) break;
+    
             const sphere = this.logic.spheresData[index];
             this.visualization.updateSphereColor(sphere, index);
         }
-
-        // Add a small delay to make the color change visible. Later animate
+    
         await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     async highlightUndetectedIssues(scannedSpheres) {
+        if (this.isScanningCancelled) return;
         const leftmostScannedIndex = Math.min(...scannedSpheres);
         const undetectedBadSpheres = [];
 

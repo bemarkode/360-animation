@@ -3,10 +3,11 @@ import * as SphereOps from '../../modules/sphere-operations.js';
 import { store } from '../../modules/store.js';
 
 export class Stage2Visualization {
-    constructor() {
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+    constructor(spheres, spheresData) {
+        this.spheresData = spheresData
+        this.spheres = spheres
         this.scene = store.getScene(); // Assuming you've added the scene to the store
+        this.scanningSpheres = [];
     }
 
     async animateSphereUp(sphereIndex) {
@@ -101,6 +102,8 @@ export class Stage2Visualization {
             const scanSphere = new THREE.Mesh(scanSphereGeometry, scanSphereMaterial);
             scanSphere.position.copy(sphere.position);
             this.scene.add(scanSphere);
+
+            this.scanningSpheres.push(scanSphere);
     
             gsap.to(clipPlane, {
                 constant: zPos + 28,
@@ -133,15 +136,12 @@ export class Stage2Visualization {
         await Promise.all(animations);
     }
 
-    updateSphereAfterReset(sphere, index) {
-        this.updateSphereColor(sphere, index);
-        this.updateSphereMatrix(sphere, index);
-    }
-    
     updateVisuals() {
         this.spheresData.forEach((sphere, index) => {
             this.updateSphereColor(sphere, index);
             this.updateSphereMatrix(sphere, index);
         });
     }
+
+
 }

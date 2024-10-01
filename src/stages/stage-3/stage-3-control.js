@@ -1,28 +1,25 @@
 import { store } from '../../modules/store.js';
 import { visibilityManager } from '../../modules/visibility-manager.js';
+import * as SphereOps from '../../modules/sphere-operations.js';
 
 export class Stage3Control {
-    constructor(logic, visualization) {
+    constructor(spheres, spheresData,logic, visualization, stageObserver) {
+        this.stageObserver = stageObserver;
         this.logic = logic;
         this.visualization = visualization;
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+        this.spheresData = spheresData
+        this.spheres = spheres
     }
+
 
     update(deltaTime) {
-        // Add Stage 3 specific update logic here
-        this.updateSphereStates();
-    }
+        // console.log('Stage 3 visibility range', visibilityManager.visibilityRange);
+        store.setFlowSpeed(0.0);
 
-    updateSphereStates() {
-        this.spheresData.forEach((sphere, index) => {
-            visibilityManager.updateSphereVisibility(sphere);
-            this.visualization.updateSphereMatrix(sphere, index);
-        });
 
-        this.spheres.instanceMatrix.needsUpdate = true;
-        this.visualization.updateAllSpheres();
+
+        this.visualization.updateVisuals();
     }
+}
 
     // Add any Stage 3 specific control methods here
-}

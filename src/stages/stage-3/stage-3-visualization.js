@@ -3,13 +3,13 @@ import * as SphereOps from '../../modules/sphere-operations.js';
 import { store } from '../../modules/store.js';
 
 export class Stage3Visualization {
-    constructor() {
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+    constructor(spheres, spheresData) {
+        this.spheresData = spheresData;
+        this.spheres = spheres;
         this.scene = store.getScene();
     }
 
-    updateAllSpheres() {
+    updateVisuals() {
         this.spheresData.forEach((sphere, index) => {
             this.updateSphereColor(sphere, index);
             this.updateSphereMatrix(sphere, index);
@@ -24,6 +24,4 @@ export class Stage3Visualization {
     updateSphereMatrix(sphere, index) {
         SphereOps.updateSphereMatrix(sphere, this.spheres, index);
     }
-
-    // Add any Stage 3 specific visualization methods here
 }

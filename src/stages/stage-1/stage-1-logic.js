@@ -3,12 +3,13 @@ import { surface } from '../../modules/surface.js';
 import { store } from '../../modules/store.js';
 
 export class Stage1Logic {
-    constructor() {
-        this.spheresData = store.getSpheresData();
+    constructor(spheres, spheresData, ) {
+        this.spheresData = spheresData
         this.rows = 71; // Assuming these values, adjust if needed
         this.cols = 70;
         this.scanningActive = false;
         this.scanningProgress = 0;
+
     }
 
     initializeStage() {

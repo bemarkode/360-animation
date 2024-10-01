@@ -3,10 +3,25 @@ import * as SphereOps from '../../modules/sphere-operations.js';
 import { store } from '../../modules/store.js';
 
 export class Stage1Visualization {
-    constructor() {
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+    constructor(spheres, spheresData) {
+        this.spheresData = spheresData;
+        this.spheres = spheres;
         this.scene = store.getScene(); // Assuming you've added the scene to the store
+        this.scanningSpheres = [];
+    }
+
+    clearAnimations() {
+        // Kill any ongoing GSAP animations
+        gsap.killTweensOf(this.spheresData);
+        
+        // Remove any temporary objects from the scene
+        this.scanningSpheres.forEach(sphere => this.scene.remove(sphere));
+        this.scanningSpheres = [];
+
+        // Reset any other animation-related properties
+        this.spheresData.forEach(sphere => {
+            sphere.isAnimating = false;
+        });
     }
 
     async animateSphereUp(sphereIndex) {
@@ -107,10 +122,10 @@ export class Stage1Visualization {
         await Promise.all(animations);
     }
 
-    updateSphereAfterReset(sphere, index) {
-        this.updateSphereColor(sphere, index);
-        this.updateSphereMatrix(sphere, index);
-    }
+    // updateSphereAfterReset(sphere, index) {
+    //     this.updateSphereColor(sphere, index);
+    //     this.updateSphereMatrix(sphere, index);
+    // }
     
     updateVisuals() {
         this.spheresData.forEach((sphere, index) => {

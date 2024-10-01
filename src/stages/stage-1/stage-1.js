@@ -6,26 +6,29 @@ import { visibilityManager } from '../../modules/visibility-manager.js';
 import { stageConfigs } from '../../modules/stage-config.js';
 
 export class Stage1 {
-    constructor() {
+    constructor(spheres, spheresData, stageObserver) {
+        this.stageObserver = stageObserver;
+        this.spheresData = spheresData;
         this.config = stageConfigs.stage1;
-        this.logic = new Stage1Logic();
-        this.visualization = new Stage1Visualization();
-        this.control = new Stage1Control(this.logic, this.visualization, this.visibilityRange);
+        this.logic = new Stage1Logic(spheres, spheresData, );
+        this.visualization = new Stage1Visualization(spheres, spheresData, );
+        this.control = new Stage1Control(spheres, spheresData,  this.logic, this.visualization, this.visibilityRange);
     }
 
-    async transitionTo() {
-        console.log('Transitioning to Stage 1');
-
-        await visibilityManager.transitionToStage('stage1');
-        this.logic.initializeStage();
-
+    async transitionToNext() {
         this.update()
     }
 
-    async transitionFrom() {
-        console.log('Transitioning from Stage 1');
-        
+    async transitionToPrevious() {        
+        this.update()
+    }
 
+    async transitionFromNext() {
+        this.update()
+    }
+
+    async transitionFromPrevious() {
+        this.update()
     }
 
 
@@ -33,6 +36,7 @@ export class Stage1 {
 
 
     update(deltaTime) {
+        
         this.control.update(deltaTime);
     }
 }

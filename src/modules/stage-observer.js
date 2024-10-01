@@ -40,6 +40,6 @@ export class StageObserver {
     updateDisplay() {
         let text = `Current Stage: ${this.currentStage + 1}`;
         this.element.textContent = text;
-        console.log('StageObserver updated:', text); // Add this for debugging
+        
     }
 }

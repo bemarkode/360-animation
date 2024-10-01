@@ -27,13 +27,14 @@ export function isSphereAtReset(sphere) {
     return sphere.v > 0.99;
 }
 
-export function shouldScanSphere(sphere, index, flowSpeed, sphereCounter) {
-    return sphere.visible && 
-           sphere.v >= 0.5 && 
-           sphere.v < 0.5 + flowSpeed && 
-           sphereCounter % 10 === 0 && 
-           !sphere.scanned;
-}
+export function shouldSphereBeScanned(sphere, flowSpeed, sphereCounter) {
+    const isVisible = sphere.visible;
+    const inScanRange = sphere.v >= 0.5 && sphere.v < 0.5 + flowSpeed;
+    const isScanInterval = sphereCounter % 10 === 0;
+    const isNotScanned = !sphere.scanned;
+  
+    return isVisible && inScanRange && isScanInterval && isNotScanned;
+  }
 
 export function getSphereColor(sphere) {
     const color = new THREE.Color();
@@ -65,13 +66,9 @@ export function updateSphereMatrix(sphere, instancedMesh, index) {
     instancedMesh.instanceMatrix.needsUpdate = true;
 }
 
-export function updateSphereScales(sphere, instancedMesh, index) {
-    const scale = sphere.visible ? new THREE.Vector3(1, 1, 1) : new THREE.Vector3(0, 0, 0);
-    instancedMesh.setMatrixAt(index, new THREE.Matrix4().compose(sphere.position, sphere.rotation, scale));
-    instancedMesh.instanceMatrix.needsUpdate = true;
-}
 
-export function updateSphereAfterReset(sphere, instancedMesh, index) {
-    updateSphereColor(sphere, instancedMesh, index);
-    updateSphereMatrix(sphere, instancedMesh, index);
-}
+
+// export function updateSphereAfterReset(sphere, instancedMesh, index) {
+//     updateSphereColor(sphere, instancedMesh, index);
+//     updateSphereMatrix(sphere, instancedMesh, index);
+// }

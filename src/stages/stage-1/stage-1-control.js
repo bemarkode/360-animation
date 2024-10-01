@@ -3,11 +3,12 @@ import * as SphereOps from '../../modules/sphere-operations.js';
 import { visibilityManager } from '../../modules/visibility-manager.js';
 
 export class Stage1Control {
-    constructor(logic, visualization) {
+    constructor(spheres, spheresData,logic, visualization, stageObserver) {
+        this.stageObserver = stageObserver;
         this.logic = logic;
         this.visualization = visualization;
-        this.spheresData = store.getSpheresData();
-        this.spheres = store.getSpheres();
+        this.spheresData = spheresData
+        this.spheres = spheres;
     }
 
     update(deltaTime) {
@@ -23,16 +24,17 @@ export class Stage1Control {
                 SphereOps.updateSpherePosition(sphere, flowSpeed);
     
                 if (SphereOps.isSphereAtReset(sphere)) {
-                    const resetSphere = SphereOps.resetSphere(sphere, index, this.spheresData);
-                    this.visualization.updateSphereAfterReset(resetSphere, index);
+                    // const resetSphere = SphereOps.resetSphere(sphere, index, this.spheresData);
+                    // this.visualization.updateSphereAfterReset(resetSphere, index);
+                    SphereOps.resetSphere(sphere, index, this.spheresData);
                 }
             }
     
-            visibilityManager.updateSphereVisibility(sphere);
-            this.visualization.updateSphereMatrix(sphere, index);
+
+            // this.visualization.updateSphereMatrix(sphere, index);
         });
     
-        this.spheres.instanceMatrix.needsUpdate = true;
+        // this.spheres.instanceMatrix.needsUpdate = true;
         this.visualization.updateVisuals();
     }
 
@@ -45,8 +47,8 @@ export class Stage1Control {
             
             if (i % this.logic.cols === 0) sphereCounter++;
     
-            if (SphereOps.shouldScanSphere(sphere, i, flowSpeed, sphereCounter)) {
-                // console.log(`Scanning sphere at index ${i}`);
+            if (SphereOps.shouldSphereBeScanned(sphere, flowSpeed, sphereCounter)) {
+                
                 this.startScanning(i);
                 break;
             }
@@ -54,7 +56,7 @@ export class Stage1Control {
     }
 
 async startScanning(sphereIndex) {
-    // console.log(`Starting scanning process for sphere ${sphereIndex}`);
+    console.log('Starting scanning', sphereIndex);
     store.setFlowSpeed(0); // Stop the flow
 
     const { result, badSpheres, scannedSpheres } = this.logic.propagate(sphereIndex);
@@ -84,7 +86,7 @@ async startScanning(sphereIndex) {
     }
 
     async repairSpheres(sphereIndices) {
-        // console.log('Repairing spheres:', sphereIndices);
+        
         
         // Repair the spheres in the logic
         this.logic.repair(sphereIndices);

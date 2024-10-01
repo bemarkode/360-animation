@@ -2,21 +2,23 @@ import { Stage1 } from '../stages/stage-1/stage-1.js';
 import { Stage2 } from '../stages/stage-2/stage-2.js';
 import { Stage3 } from '../stages/stage-3/stage-3.js';
 import { StageObserver } from './stage-observer.js';
+import { visibilityManager } from './visibility-manager.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export class StageManager {
-    constructor() {
+    constructor(spheres, spheresData) {
+        this.spheresData = spheresData;
         this.currentStageIndex = 0;
-        this.stages = [
-            new Stage1(),
-            new Stage2(),
-            new Stage3()
-        ];
         this.stageObserver = new StageObserver();
+        this.stages = [
+            new Stage1(spheres, spheresData, this.stageObserver),
+            new Stage2(spheres, spheresData, this.stageObserver),
+            new Stage3(spheres, spheresData, this.stageObserver)
+        ];
         this.stageObserver.updateStage(this.currentStageIndex);
         this.setupScrollTrigger();
-        console.log('StageManager initialized');
+        this.isTransitioning = false;
     }
 
     setupScrollTrigger() {
@@ -39,28 +41,23 @@ export class StageManager {
                 onUpdate: self => {
                     const scrollProgress = (self.progress - 1/numStages) / (1 - 1/numStages);
                     let targetStage = 1 + Math.floor(scrollProgress * (numStages - 1));
-                    console.log("Current:", currentStageIndex, "Target:", targetStage, "Total:", numStages, "Direction:", self.direction);
-                    
+                
                     if (targetStage !== currentStageIndex && targetStage >= -1 && targetStage < numStages) {
-                        console.log("Condition met, calling transition");
-                        
-                        // Determine if we're scrolling up or down
                         const isScrollingUp = self.direction === -1;
-                        
-                        // Update currentStageIndex immediately
-                        currentStageIndex = targetStage;
                         
                         // Use GSAP's delayedCall for immediate execution
                         gsap.delayedCall(0, async () => {
-                            console.log(isScrollingUp ? "Scrolling Up" : "Scrolling Down");
-                            if (isScrollingUp) {
-                                console.log("Transitioning to previous stage");
-                                await this.transitionToPreviousStage();
-                            } else {
-                                console.log("Transitioning to next stage");
-                                await this.transitionToNextStage();
+                            if (!this.isTransitioning) {
+                                this.isTransitioning = true;
+                                if (isScrollingUp) {
+                                    await this.transitionToPreviousStage();
+                                } else {
+                                    await this.transitionToNextStage();
+                                }
+                                currentStageIndex = targetStage;
+                                this.updateObserver();
+                                this.isTransitioning = false;
                             }
-                            this.updateObserver();
                         });
                     }
                 }
@@ -71,18 +68,24 @@ export class StageManager {
 
     async transitionToNextStage() {
         if (this.currentStageIndex < this.stages.length - 1) {
-            await this.stages[this.currentStageIndex].transitionFrom();
+            console.log(`Transitioning from Stage ${this.currentStageIndex + 1} to Stage ${this.currentStageIndex + 2}`);
+            await this.stages[this.currentStageIndex].transitionToNext();
             this.currentStageIndex++;
-            await this.stages[this.currentStageIndex].transitionTo();
+            await visibilityManager.transitionToStage(`stage${this.currentStageIndex + 1}`);
+            console.log(`Visibility transition complete. Now in Stage ${this.currentStageIndex + 1}`);
+            await this.stages[this.currentStageIndex].transitionFromPrevious();
             this.updateObserver();
         }
     }
 
     async transitionToPreviousStage() {
         if (this.currentStageIndex > 0) {
-            await this.stages[this.currentStageIndex].transitionFrom();
+            console.log(`Transitioning from Stage ${this.currentStageIndex + 1} to Stage ${this.currentStageIndex}`);
+            await this.stages[this.currentStageIndex].transitionToPrevious();
             this.currentStageIndex--;
-            await this.stages[this.currentStageIndex].transitionTo();
+            await visibilityManager.transitionToStage(`stage${this.currentStageIndex + 1}`);
+            console.log(`Visibility transition complete. Now in Stage ${this.currentStageIndex + 1}`);
+            await this.stages[this.currentStageIndex].transitionFromNext();
             this.updateObserver();
         }
     }
@@ -90,10 +93,13 @@ export class StageManager {
     updateObserver() {
         const currentStage = this.stages[this.currentStageIndex];
         this.stageObserver.updateStage(this.currentStageIndex);
-        console.log(`Observer updated. Current stage: ${this.currentStageIndex}`);
+        
     }
 
     update(deltaTime) {
+        visibilityManager.updateVisibility(this.spheresData);
         this.stages[this.currentStageIndex].update(deltaTime);
     }
+
+
 }

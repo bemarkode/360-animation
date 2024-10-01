@@ -4,33 +4,25 @@
 class Store {
     constructor() {
         this.state = {
-            spheres: null,
-            spheresData: null,
+            camera : null,
             flowSpeed: 3 / 4900, // Default flow speed,
             scene: null,
-            visibilityRange: { u: { min: 0, max: 1 }, v: { min: 0, max: 1 } },
-            targetVisibilityRange: { u: { min: 0, max: 1 }, v: { min: 0, max: 1 } }
+            visibilityRange: { u: { min: 0, max: 0.5 }, v: { min: 0, max: 0.2 } },
+            targetVisibilityRange: { u: { min: 0, max: 0.5 }, v: { min: 0, max: 0.2 } }
         };
     }
 
-    setSpheres(spheres) {
-        this.state.spheres = spheres;
-    }
-
-    setSpheresData(spheresData) {
-        this.state.spheresData = spheresData;
-    }
 
     setFlowSpeed(speed) {
         this.state.flowSpeed = speed;
     }
 
-    getSpheres() {
-        return this.state.spheres;
+    setCamera(camera) {
+        this.state.camera = camera;
     }
 
-    getSpheresData() {
-        return this.state.spheresData;
+    getCamera() {
+        return this.state.camera;
     }
 
     getFlowSpeed() {

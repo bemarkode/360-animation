@@ -1,14 +1,21 @@
 import { store } from '../../modules/store.js';
 
 export class Stage3Logic {
-    constructor() {
-        this.spheresData = store.getSpheresData();
+    constructor(spheres, spheresData) {
+        this.spheresData = spheresData
+        this.stage3SpecificState = null;
     }
 
-    initializeStage() {
+    async initializeStage() {
+        
         // Initialize any stage-specific logic here
-        console.log('Initializing Stage 3 Logic');
+        this.stage3SpecificState = 'initialized';
+        // You might want to perform some asynchronous setup here
     }
 
-    // Add any Stage 3 specific logic methods here
+    resetStage() {
+        
+        this.stage3SpecificState = null;
+        // Reset any other stage-specific state
+    }
 }

@@ -13,7 +13,8 @@ class VisibilityManager {
         store.setVisibilityRange(this.visibilityRange);
     }
 
-    async transitionVisibilityRange(newRange, duration = 1) {
+    async transitionVisibilityRange(newRange, duration = 0.5) {
+        console.log('Transitioning visibility range from', this.visibilityRange, 'to', newRange);
         return new Promise((resolve) => {
             gsap.to(this.visibilityRange.u, {
                 min: newRange.u.min,
@@ -29,7 +30,10 @@ class VisibilityManager {
                 duration: duration,
                 ease: "power2.inOut",
                 onUpdate: () => this.updateStore(),
-                onComplete: resolve
+                onComplete: () => {
+                    console.log('Visibility range transition complete:', this.visibilityRange);
+                    resolve();
+                }
             });
         });
     }
@@ -39,8 +43,10 @@ class VisibilityManager {
     }
 
     async transitionToStage(stageName) {
+        console.log(`Starting visibility transition to ${stageName}`);
         const newRange = stageConfigs[stageName].visibilityRange;
         await this.transitionVisibilityRange(newRange);
+        console.log(`Completed visibility transition to ${stageName}`);
     }
 
     isSphereVisible(sphere) {
@@ -59,11 +65,13 @@ class VisibilityManager {
         return sphere.visible;
     }
 
-    debugVisibilityRange() {
-        console.log('Current Visibility Range:', this.visibilityRange);
-        const visibleSpheres = store.getSpheresData().filter(sphere => this.isSphereVisible(sphere));
-        console.log('Number of visible spheres:', visibleSpheres.length);
+    updateVisibility(spheresData) {
+        spheresData.forEach(sphere => {
+            this.updateSphereVisibility(sphere);
+        });
     }
+
+
 }
 
 export const visibilityManager = new VisibilityManager();

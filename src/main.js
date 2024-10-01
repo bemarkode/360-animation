@@ -24,13 +24,13 @@ const COLS = 70;
 
 const { spheres, spheresData } = createSpheresOnSurface(ROWS, COLS);
 
-store.setSpheres(spheres);
-store.setSpheresData(spheresData);
+
 store.setScene(scene);
+store.setCamera(camera);
 
 const flowController = createFlowController();
 
-const stageManager = new StageManager();
+const stageManager = new StageManager(spheres, spheresData, flowController);
 
 scene.add(spheres);
 
