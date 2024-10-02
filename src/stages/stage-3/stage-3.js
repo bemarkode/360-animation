@@ -39,6 +39,8 @@ export class Stage3 {
 
         this.initScanLine();
         this.initPostProcessing();
+        this.connectedLines = new THREE.Group();
+        this.scene.add(this.connectedLines);
     }
 
     
@@ -73,9 +75,180 @@ export class Stage3 {
         this.initScanLine();
         this.scene.add(this.scanLine);
         this.scanLinePosition = -4000; // Reset scan line position
+        await this.performSweepAnimation();
+
+        // Wait for 200ms after the sweep is complete
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Execute new functions after the delay
+        this.postSweepFunctions();
+        
         this.update(0);
     }
     
+    async performSweepAnimation() {
+        // Implement your sweeping effect here
+        // This is a placeholder for the actual animation
+        return new Promise(resolve => {
+            gsap.to(this, {
+                scanLinePosition: 4000,
+                duration: 1,
+                ease: "power2.inOut",
+                onUpdate: () => {
+                    this.updateScanLine(0);
+                },
+                onComplete: resolve
+            });
+        });
+    }
+
+    postSweepFunctions() {
+        console.log("Executing post-sweep functions");
+        // Add your new functions here
+        this.analyzeAndConnectBadSpheres();
+        
+    }
+
+    analyzeAndConnectBadSpheres() {
+        const grid = this.createGrid();
+        const connectedGroups = this.findConnectedLines(grid);
+        this.highlightConnectedSpheres(connectedGroups);
+        this.drawConnectionLines(connectedGroups);
+    }
+
+    createGrid() {
+        const grid = {};
+        this.spheresData.forEach((sphere, index) => {
+            if (sphere.visible && sphere.status === 'bad') {
+                const key = `${sphere.row},${sphere.col}`;
+                grid[key] = { index, position: sphere.position };
+            }
+        });
+        return grid;
+    }
+
+    findConnectedLines(grid) {
+        const connectedGroups = [];
+        const globalVisitedKeys = new Set();
+    
+        // For each sphere in the grid
+        for (const key in grid) {
+            const [row, col] = key.split(',').map(Number);
+    
+            // Directions: E, SE, S, SW
+            const directions = [
+                [0, 1],    // East
+                [1, 1],    // South-East
+                [1, 0],    // South
+                [1, -1],   // South-West
+            ];
+    
+            for (const [deltaRow, deltaCol] of directions) {
+                const line = [];
+                const lineKeys = [];
+                let currentRow = row;
+                let currentCol = col;
+                let lineKey = `${currentRow},${currentCol}`;
+    
+                // Only process if this starting point hasn't been processed in this direction
+                const lineId = `${lineKey}_${deltaRow}_${deltaCol}`;
+                if (globalVisitedKeys.has(lineId)) continue;
+    
+                // Move backwards to the start of the line
+                while (true) {
+                    const prevRow = currentRow - deltaRow;
+                    const prevCol = currentCol - deltaCol;
+                    const prevKey = `${prevRow},${prevCol}`;
+                    if (!grid[prevKey]) break;
+                    currentRow = prevRow;
+                    currentCol = prevCol;
+                    lineKey = prevKey;
+                }
+    
+                // Now move forward and collect spheres in this line
+                currentRow = currentRow;
+                currentCol = currentCol;
+                lineKey = `${currentRow},${currentCol}`;
+                while (grid[lineKey]) {
+                    const lineId = `${lineKey}_${deltaRow}_${deltaCol}`;
+                    if (globalVisitedKeys.has(lineId)) break;
+                    line.push(grid[lineKey]);
+                    lineKeys.push(lineKey);
+                    globalVisitedKeys.add(lineId);
+    
+                    currentRow += deltaRow;
+                    currentCol += deltaCol;
+                    lineKey = `${currentRow},${currentCol}`;
+                }
+    
+                if (line.length >= 3) {
+                    connectedGroups.push(line);
+                }
+            }
+        }
+    
+        return connectedGroups;
+    }
+    
+    
+
+    dfs(startKey, grid, visited) {
+        const stack = [startKey];
+        const group = [];
+
+        while (stack.length > 0) {
+            const key = stack.pop();
+            if (!visited.has(key)) {
+                visited.add(key);
+                group.push(grid[key]);
+
+                const [row, col] = key.split(',').map(Number);
+                const neighbors = [
+                    `${row},${col+1}`, `${row},${col-1}`,
+                    `${row+1},${col}`, `${row-1},${col}`
+                ];
+
+                for (const neighbor of neighbors) {
+                    if (grid[neighbor] && !visited.has(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+
+        return group;
+    }
+
+    highlightConnectedSpheres(connectedGroups) {
+        connectedGroups.forEach(group => {
+            group.forEach(sphere => {
+                this.spheres.setColorAt(sphere.index, new THREE.Color(0xff00ff)); // Magenta
+                this.updateSphereColor(this.spheresData[sphere.index], sphere.index);
+            });
+        });
+        this.spheres.instanceColor.needsUpdate = true;
+    }
+
+    drawConnectionLines(connectedGroups) {
+        this.connectedLines.clear();
+
+        connectedGroups.forEach(group => {
+            if (group.length < 2) return;
+
+            const startSphere = group[0];
+            const endSphere = group[group.length - 1];
+
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                startSphere.position,
+                endSphere.position
+            ]);
+
+            const material = new THREE.LineBasicMaterial({ color: 0xff00ff });
+            const line = new THREE.Line(geometry, material);
+            this.connectedLines.add(line);
+        });
+    }
+
     async resetCameraPosition() {
         const originalPosition = new THREE.Vector3(0, -4000, 750);
         
