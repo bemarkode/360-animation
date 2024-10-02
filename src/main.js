@@ -27,6 +27,7 @@ const { spheres, spheresData } = createSpheresOnSurface(ROWS, COLS);
 
 store.setScene(scene);
 store.setCamera(camera);
+store.setRenderer(renderer);
 
 const flowController = createFlowController();
 

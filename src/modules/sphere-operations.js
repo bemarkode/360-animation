@@ -52,6 +52,11 @@ export function getSphereColor(sphere) {
     return color;
 }
 
+export function setSphereColor(color, instancedMesh, index) {
+    instancedMesh.setColorAt(index, color);
+    instancedMesh.instanceColor.needsUpdate = true;
+}
+
 export function updateSphereColor(sphere, instancedMesh, index) {
     const color = getSphereColor(sphere);
     instancedMesh.setColorAt(index, color);

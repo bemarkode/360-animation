@@ -4,6 +4,7 @@
 class Store {
     constructor() {
         this.state = {
+            renderer : null,
             camera : null,
             flowSpeed: 3 / 4900, // Default flow speed,
             scene: null,
@@ -12,6 +13,13 @@ class Store {
         };
     }
 
+    setRenderer(renderer) {
+        this.state.renderer = renderer;
+    }
+
+    getRenderer() {
+        return this.state.renderer;
+    }
 
     setFlowSpeed(speed) {
         this.state.flowSpeed = speed;
