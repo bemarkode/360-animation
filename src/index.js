@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+
 import { createSpheresOnSurface } from './modules/spheres-grid.js';
 import { addLights } from './modules/lights.js';
 import { surface } from './modules/surface.js';
