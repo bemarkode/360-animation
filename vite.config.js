@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  base: '/your-repo-name/', // Replace with your GitHub repository name
+  base: '/360-animation/', 
   build: {
     outDir: 'dist',
     rollupOptions: {
