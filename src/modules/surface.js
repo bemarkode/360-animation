@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { NURBSSurface } from "three/addons/curves/NURBSSurface.js";
+import { NURBSSurface } from "three/examples/jsm/curves/NURBSSurface.js";
 
 
 const controlPoints = [
