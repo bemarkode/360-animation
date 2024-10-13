@@ -1,10 +1,10 @@
-import * as THREE from 'three';
-import { Line2 } from 'three/examples/jsm/lines/Line2.js';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
+import * as THREE from "https://unpkg.com/three@0.166.1/build/three.module.js";
+import { Line2 } from 'https://unpkg.com/three@0.166.1/examples/jsm/lines/Line2.js';
+import { LineMaterial } from 'https://unpkg.com/three@0.166.1/examples/jsm/lines/LineMaterial.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.166.1/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.166.1/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.166.1/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Stage3Logic } from './stage-3-logic.js';
 import { Stage3Visualization } from './stage-3-visualization.js';
 import { Stage3Control } from './stage-3-control.js';

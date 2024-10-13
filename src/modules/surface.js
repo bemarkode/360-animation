@@ -1,5 +1,5 @@
-import * as THREE from "three";
-import { NURBSSurface } from "three/addons/curves/NURBSSurface.js";
+import * as THREE from "https://unpkg.com/three@0.166.1/build/three.module.js";
+import { NURBSSurface } from "https://unpkg.com/three@0.166.1/addons/curves/NURBSSurface.js";
 
 
 const controlPoints = [

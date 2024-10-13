@@ -4,7 +4,7 @@ import { Stage2Control } from './stage-2-control.js';
 import { store } from '../../modules/store.js';
 import { visibilityManager } from '../../modules/visibility-manager.js';
 import { stageConfigs } from '../../modules/stage-config.js';
-import * as THREE from 'three';
+import * as THREE from "https://unpkg.com/three@0.166.1/build/three.module.js";
 
 
 export class Stage2 {
