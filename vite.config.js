@@ -1,22 +1,20 @@
 import { defineConfig } from 'vite';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { resolve } from 'path';
 
 export default defineConfig({
-  base: './', // This ensures that asset paths are relative
+  base: '/your-repo-name/', // Replace with your GitHub repository name
   build: {
-    outDir: 'dist', // Output directory for the build
-    assetsDir: 'assets', // Directory for assets within the output directory
+    outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+    },
   },
   resolve: {
     alias: {
-      'three': path.resolve(__dirname, 'node_modules/three'),
+      'three': resolve(__dirname, 'node_modules/three'),
+      'three/examples/jsm': resolve(__dirname, 'node_modules/three/examples/jsm'),
     },
   },
-  optimizeDeps: {
-    include: ['three']
-  }
 });
